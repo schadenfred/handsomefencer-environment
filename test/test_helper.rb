@@ -1,4 +1,9 @@
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
-require "handsomefencer/environment"
 
 require "minitest/autorun"
+require "minitest/given"
+require "byebug"
+
+require "handsomefencer/environment"
+
+include Handsomefencer::Environment
