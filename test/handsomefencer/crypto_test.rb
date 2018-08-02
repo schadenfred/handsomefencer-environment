@@ -58,7 +58,6 @@ describe Handsomefencer::Environment::Crypto do
   end
 
   Given(:dummy_local) { 'test/dummy/local/.env' }
-  Given(:dummy_server) { 'test/dummy/server/.env' }
 
   describe "obfuscate variables" do
 
@@ -110,6 +109,8 @@ describe Handsomefencer::Environment::Crypto do
     end
   end
 
+  Given(:dummy_server) { 'test/dummy/server/.env' }
+
   describe "expose variables" do
 
     describe "self.source_encrypted_files()" do
@@ -129,28 +130,44 @@ describe Handsomefencer::Environment::Crypto do
 
       describe "with specified directory" do
 
-        Given(:file1) { dummy_server + '.env/circle.env.enc' }
-        Given(:file2) { dummy_server + '.env/development/web.env.enc' }
-        Given(:file3) { dummy_server + '.env/development/database.env.enc' }
+        Given(:file1) { dummy_server + '/circle.env.enc' }
+        Given(:file2) { dummy_server + '/development/web.env.enc' }
+        Given(:file3) { dummy_server + '/development/database.env.enc' }
 
-        Given { Crypto.source_encrypted_files(dummy_server)}
+        Given(:actual) { Crypto.source_encrypted_files(dummy_server) }
 
         Then { assert File.exist? file1 }
-        # And  { assert File.exist? file2 }
-        # And  { assert File.exist? file3 }
-
+        And  { assert File.exist? file2 }
+        And  { assert File.exist? file3 }
       end
     end
 
     describe "self.expose()" do
 
+      describe "default" do
+
+        Given(:file1) { '.env/circle.env' }
+        Given(:file2) { '.env/development/web.env' }
+        Given(:file3) { '.env/development/database.env' }
+
+        When { Crypto.expose }
+
+        Then { assert File.exist? file1 }
+        And  { assert File.exist? file2 }
+        And  { assert File.exist? file3 }
+      end
+
       describe "with specified directory" do
-before { skip }
-        Given(:first_level_file) { server_path('.env/circle.env') }
-        Given(:second_level_file) { server_path('.env/development/web.env') }
-        Given { Crypto.expose(directory: server_path + ".env") }
-        Then { assert File.exist? first_level_file }
-        And { assert File.exist? second_level_file }
+
+        Given(:file1) { dummy_server + '/circle.env' }
+        Given(:file2) { dummy_server + '/development/web.env' }
+        Given(:file3) { dummy_server + '/development/database.env' }
+
+        Given { Crypto.expose(dummy_server) }
+
+        Then { assert File.exist? file1 }
+        And  { assert File.exist? file2 }
+        And  { assert File.exist? file3 }
       end
     end
   end
@@ -158,7 +175,6 @@ before { skip }
   Minitest.after_run do
     hash = {"local" => "env.enc", "server" => "env"}
     dir = "test/dummy"
-    Dir.glob(".env/**/*.env.enc").each { |f| File.delete(f)}
     hash.each do |key, value|
       Dir.glob("#{dir}/#{key}/.env/**/*.#{value}").each { |f| File.delete(f)}
     end

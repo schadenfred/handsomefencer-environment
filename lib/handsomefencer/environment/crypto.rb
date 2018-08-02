@@ -21,7 +21,7 @@ module Handsomefencer
       def self.source_encrypted_files(directory=nil)
         default = Dir.glob(".env/**/*.env.enc")
         if !directory.nil?
-          byebug
+          # byebug
         end
         directory.nil? ? default : Dir.glob(directory + '/**/*.env.enc')
       end
@@ -50,8 +50,8 @@ module Handsomefencer
         end
       end
 
-      def self.expose(options={})
-        directory = options[:directory].nil? ? nil : options[:directory]
+      def self.expose(directory=nil, options={})
+        directory = directory || nil
         source_encrypted_files(directory).each do |file|
           new(file).decrypt_file
         end
