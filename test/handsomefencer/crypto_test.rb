@@ -4,6 +4,9 @@ describe Handsomefencer::Environment::Crypto do
 
   subject { Crypto }
 
+  Given { ENV["CIRCLE_CI_DEP"] = "+15555551212" }
+
+
   describe "base methods" do
 
     Given(:instantiated) { Crypto.new("message") }
