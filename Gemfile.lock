@@ -7,47 +7,64 @@ GEM
   remote: https://rubygems.org/
   specs:
     byebug (10.0.2)
-    diff-lcs (1.2.5)
+    coderay (1.1.2)
     ffi (1.9.25)
-    guard (0.10.0)
-      ffi (>= 0.5.0)
-      thor (~> 0.14.6)
-    guard-minitest (0.5.0)
-      guard (>= 0.4)
+    formatador (0.2.5)
+    given_core (3.8.0)
+      sorcerer (>= 0.3.7)
+    guard (2.14.2)
+      formatador (>= 0.2.4)
+      listen (>= 2.7, < 4.0)
+      lumberjack (>= 1.0.12, < 2.0)
+      nenv (~> 0.1)
+      notiffany (~> 0.0)
+      pry (>= 0.9.12)
+      shellany (~> 0.0)
+      thor (>= 0.18.1)
+    guard-compat (1.2.1)
+    guard-minitest (2.4.6)
+      guard-compat (~> 1.2)
+      minitest (>= 3.0)
+    listen (3.1.5)
+      rb-fsevent (~> 0.9, >= 0.9.4)
+      rb-inotify (~> 0.9, >= 0.9.7)
+      ruby_dep (~> 1.2)
+    lumberjack (1.0.13)
+    method_source (0.9.0)
     minitest (5.11.3)
-    minitest-given (0.1.pre)
-      minitest (>= 4.4.0)
-      wrong (>= 0.6.3)
-    predicated (0.2.6)
-    rake (10.5.0)
+    minitest-given (3.8.0)
+      given_core (= 3.8.0)
+      minitest (> 4.3)
+    nenv (0.3.0)
+    notiffany (0.1.1)
+      nenv (~> 0.1)
+      shellany (~> 0.0)
+    pry (0.11.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.9.0)
+    rake (12.3.1)
+    rb-fsevent (0.10.3)
+    rb-inotify (0.9.10)
+      ffi (>= 0.5.0, < 2)
     rb-readline (0.5.5)
-    ruby2ruby (2.4.1)
-      ruby_parser (~> 3.1)
-      sexp_processor (~> 4.6)
-    ruby_parser (3.11.0)
-      sexp_processor (~> 4.9)
-    sexp_processor (4.11.0)
-    thor (0.14.6)
-    wrong (0.7.1)
-      diff-lcs (~> 1.2.5)
-      predicated (~> 0.2.6)
-      ruby2ruby (>= 2.0.1)
-      ruby_parser (>= 3.0.1)
-      sexp_processor (>= 4.0)
+    ruby_dep (1.5.0)
+    shellany (0.0.1)
+    sorcerer (1.0.2)
+    thor (0.20.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (~> 1.16)
-  byebug (= 10.0.2)
-  guard (~> 0)
-  guard-minitest (~> 0)
+  bundler
+  byebug
+  guard
+  guard-minitest
   handsomefencer-environment!
-  minitest (~> 5.0)
-  minitest-given (~> 0)
-  rake (~> 10.0)
-  rb-readline (~> 0)
+  minitest
+  minitest-given
+  rake
+  rb-readline
 
 BUNDLED WITH
    1.16.3

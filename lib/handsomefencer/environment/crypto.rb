@@ -5,13 +5,27 @@ module Handsomefencer
   module Environment
     class Crypto
 
-      def initialize(data, options={})
-        @cipher = options[:cipher].nil? ? 'aes-256-cbc' : cipher
-        @key = options[:key].nil? ? get_master_key : get_key(options[:key])
-        @iv = options[:iv].nil? ? '0'*16 : options[:iv]
-        @data = data
-        @source_directory = options[:dir].nil? ? nil : options[:dir]
-      end
+      # def initialize(data, options={})
+      #   @cipher = options[:cipher].nil? ? 'aes-256-cbc' : cipher
+      #   @key = Crypto.get_key(options)
+      #   @iv = options[:iv].nil? ? '0'*16 : options[:iv]
+      #   @data = data
+      #   @source_directory = options[:dir].nil? ? nil : options[:dir]
+      # end
+
+      # def encrypt
+      #   c = OpenSSL::Cipher.new(@cipher).encrypt
+      #   c.iv = @iv
+      #   c.key = @key
+      #   c.update(@data) + c.final
+      # end
+
+      # def decrypt
+      #   c = OpenSSL::Cipher.new(@cipher).decrypt
+      #   c.iv = @iv
+      #   c.key = @key
+      #   c.update(@data) + c.final
+      # end
 
       def self.source_environment_files(directory=nil)
         default = Dir.glob(".env/**/*.env")
@@ -20,9 +34,6 @@ module Handsomefencer
 
       def self.source_encrypted_files(directory=nil)
         default = Dir.glob(".env/**/*.env.enc")
-        if !directory.nil?
-          # byebug
-        end
         directory.nil? ? default : Dir.glob(directory + '/**/*.env.enc')
       end
 
@@ -31,13 +42,6 @@ module Handsomefencer
         source_environment_files(directory).each do |file|
           new(file).encrypt_file
         end
-      end
-
-      def encrypt
-        c = OpenSSL::Cipher.new(@cipher).encrypt
-        c.iv = @iv
-        c.key = @key
-        c.update(@data) + c.final
       end
 
       def encrypt_file
@@ -53,7 +57,7 @@ module Handsomefencer
       def self.expose(directory=nil, options={})
         directory = directory || nil
         source_encrypted_files(directory).each do |file|
-          new(file).decrypt_file
+          new(file, options).decrypt_file
         end
       end
 
@@ -65,13 +69,6 @@ module Handsomefencer
         open decrypted_file_name, "w" do |io|
           io.write decrypted_data
         end
-      end
-
-      def decrypt
-        c = OpenSSL::Cipher.new(@cipher).decrypt
-        c.iv = @iv
-        c.key = @key
-        c.update(@data) + c.final
       end
 
       def encrypt_environment_files
@@ -86,12 +83,22 @@ module Handsomefencer
         end
       end
 
-      def get_master_key
-        ENV['RAILS_MASTER_KEY'] || get_key('config/master.key')
+      def self.get_master_key
+        ENV['RAILS_MASTER_KEY'] || get_key(key_file: 'config/master.key')
       end
 
-      def get_key(key_file)
-        File.read(key_file).strip
+      def self.get_key(options={})
+        case
+        when options.nil? || options.empty?
+          Crypto.get_master_key
+        when options[:key]
+          options[:key]
+        when options[:key_file]
+          File.read(options[:key_file]).strip
+        when options[:key_var]
+          exception = "No env variable set with #{options[:key_var]} key."
+          ENV[options[:key_var]].nil? ? exception : ENV[options[:key_var]]
+        end
       end
     end
   end

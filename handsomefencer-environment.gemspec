@@ -32,13 +32,13 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 1.16"
-  spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "minitest", "~> 5.0"
-  spec.add_development_dependency 'minitest-given', '~> 0'
-  spec.add_development_dependency "guard", "~> 0"
+  spec.add_development_dependency "bundler"
+  spec.add_development_dependency "rake"#, "12.3.1"
+  spec.add_development_dependency "minitest" #, "~> 5.0"
+  spec.add_development_dependency "minitest-given" #, "3.8.0"
+  spec.add_development_dependency "guard" #, "2.14.2"
 
-  spec.add_development_dependency "guard-minitest", "~> 0"
-  spec.add_development_dependency "rb-readline", "~> 0"
-  spec.add_development_dependency "byebug", "10.0.2"
+  spec.add_development_dependency "guard-minitest" #, "2.4.6"
+  spec.add_development_dependency "rb-readline" #, "0.5.5"
+  spec.add_development_dependency "byebug" #, "10.0.2"
 end
