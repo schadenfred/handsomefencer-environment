@@ -1,4 +1,5 @@
 require "test_helper"
+require "readline"
 
 describe Handsomefencer::Environment::Crypto do
 
@@ -58,10 +59,60 @@ describe Handsomefencer::Environment::Crypto do
 
     describe "default" do
 
-      Given(:encrypted)  { Crypto.new("message").encrypt }
+      Given(:plaintext) { "get some" }
+      Given(:cypher) { Crypto.new }
+      Given(:encrypted) { cypher.encrypt(plaintext) }
 
-      Then { Crypto.new(encrypted).decrypt.must_equal "message" }
+      Then { refute_equal plaintext, encrypted }
+      And  { assert_equal encrypted.encoding.to_s, "ASCII-8BIT" }
+
+      describe "decrypt" do
+
+        Given(:decrypted) { cypher.decrypt(encrypted) }
+        Then { assert_equal decrypted, plaintext }
+      end
     end
+  end
+
+  describe "must encrypt and decrypt a file " do
+
+    describe "default" do
+
+      Given(:plaintext) { "get some" }
+      Given(:cypher) { Crypto.new }
+      Given(:encrypted) { cypher.encrypt(plaintext) }
+
+      Then { refute_equal plaintext, encrypted }
+      And  { assert_equal encrypted.encoding.to_s, "ASCII-8BIT" }
+
+      describe "decrypt" do
+
+        Given(:decrypted) { cypher.decrypt(encrypted) }
+        Then { assert_equal decrypted, plaintext }
+      end
+    end
+  end
+
+    #
+    # describe "" do
+    #   Given(:plaintext) { "getsome" }
+    #   Given(:encrypted) { Crypto.new("getsome").encrypt }
+    #   # Given(:encrypted) { cypher.encrypt }
+    #
+    #   Then { refute_equal plaintext, encrypted }
+    #   And  { assert_equal encrypted.encoding.to_s, "ASCII-8BIT" }
+    #
+    #   describe "decrypt" do
+    #
+    #     Given(:decrypted) { Crypto.new(encrypted).decrypt }
+    #     Then { assert_equal decrypted, plaintext }
+    #   end
+    # end
+    #
+    #
+    #   # Given(:encrypted)  { Crypto.new("message").encrypt }
+    #   #
+    #   # Then { Crypto.new(encrypted).decrypt.must_equal "message" }
 
   #   describe "with key argument" do
   #
@@ -77,7 +128,7 @@ describe Handsomefencer::Environment::Crypto do
   #       Then { assert_raises(expected_error) { called_with } }
   #     end
   #   end
-  end
+  # end
 
   describe "encrypt and decrypt a file" do
 before { skip }

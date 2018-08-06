@@ -5,6 +5,69 @@ module Handsomefencer
   module Environment
     class Crypto
 
+      def initialize(options={})
+        @cipher = OpenSSL::Cipher.new 'AES-128-CBC'
+        @cipher.encrypt
+        @iv = @cipher.random_iv
+
+        @pwd = 'some hopefully not to easily guessable password'
+        @salt = OpenSSL::Random.random_bytes 16
+        @iter = 20000
+        @key_len = @cipher.key_len
+        @digest = OpenSSL::Digest::SHA256.new
+
+        @key = OpenSSL::PKCS5.pbkdf2_hmac(@pwd, @salt, @iter, @key_len, @digest)
+        @cipher.key = @key
+      end
+
+      def read(data)
+        File.read(data).split
+      end
+
+      def data_or_file?(data)
+        File.exist?(data) ? true : false
+      end
+
+      def write_data_to_file
+        # open unencrypted_document_name + ".enc", "w" do |io|
+        #   io.write Base64.encode64(encrypted)
+        # end
+
+      end
+
+      def encrypt(data=nil)
+        data = data_or_file?(data) ? read(data) : data
+        @encrypted = @cipher.update data
+        @encrypted << @cipher.final
+        # data_or_file?(data) ? write_data_to_file(data)
+        # open unencrypted_document_name + ".enc", "w" do |io|
+        #   io.write Base64.encode64(encrypted)
+        # end
+
+        # unencrypted_document_name = @data
+        # data = File.read(@data)
+        # encrypted = Crypto.new(data).encrypt
+        #
+        # open unencrypted_document_name + ".enc", "w" do |io|
+        #   io.write Base64.encode64(encrypted)
+        # end
+
+
+      end
+
+      def decrypt(encrypted=nil)
+        @cipher = OpenSSL::Cipher.new 'AES-128-CBC'
+        @cipher.decrypt
+        @cipher.iv = @iv
+        @digest = OpenSSL::Digest::SHA256.new
+        @key = OpenSSL::PKCS5.pbkdf2_hmac(@pwd, @salt, @iter, @key_len, @digest)
+        @cipher.key = @key
+
+        @data = encrypted || @data
+        decrypted = @cipher.update @data
+        decrypted << @cipher.final
+      end
+
       # def initialize(data, options={})
       #   @cipher = options[:cipher].nil? ? 'aes-256-cbc' : cipher
       #   @key = Crypto.get_key(options)
@@ -39,7 +102,6 @@ module Handsomefencer
 
       def self.obfuscate(directory=nil, options={})
         directory = directory || nil
-        source_environment_files(directory).each do |file|
           new(file).encrypt_file
         end
       end
