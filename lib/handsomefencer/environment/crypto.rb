@@ -9,7 +9,7 @@ module Handsomefencer
         @options = options
         @cipher = options[:cipher] || OpenSSL::Cipher.new('AES-128-CBC')
         @cipher.encrypt
-        @iv = @cipher.random_iv
+        # @iv = @cipher.random_iv
         @pwd = get_password
         @salt = options[:salt] || OpenSSL::Random.random_bytes(16)
         @iter = options[:iter] || 20000
@@ -31,14 +31,13 @@ module Handsomefencer
         @data = is_file?(data) ? Base64.decode64(read(data)) : data
         @cipher = OpenSSL::Cipher.new 'AES-128-CBC'
         @cipher.decrypt
-        @cipher.iv = @iv
+        # @cipher.iv = @iv
         @digest = OpenSSL::Digest::SHA256.new
         @key = OpenSSL::PKCS5.pbkdf2_hmac(@pwd, @salt, @iter, @key_len, @digest)
         @cipher.key = @key
 
         decrypted = @cipher.update @data
         decrypted << @cipher.final
-
         if is_file?(data)
           encrypted_file_name = data
           decrypted_file_name = encrypted_file_name.split(".enc").first
@@ -68,6 +67,7 @@ module Handsomefencer
         extension = extension || '.env'
         directory = directory || '.env'
         files = source_files(directory, extension)
+
         files.each do |file|
           encrypt(file)
         end
@@ -80,10 +80,6 @@ module Handsomefencer
         files.each do |file|
           decrypt(file)
         end
-        # directory = directory || nil
-        # source_encrypted_files(directory).each do |file|
-        #   new(file, options).decrypt_file
-        # end
       end
 
 

@@ -5,14 +5,37 @@ describe Handsomefencer::Environment::Crypto do
 
   subject { Crypto.new }
 
-  Given { FileUtils.copy('.env/circle.env', '.env/backup.env') }
-  Given { FileUtils.copy('.env/circle.env', '.env/development/backup.env') }
+  # Given(:file1) { '.env/circle.env' }
+  # Given(:file2) { '.env/file2.env' }
+  # Given(:file3) { '.env/file3.env' }
+  # # Given(:file3) { '.env/development/backup.env' }
+  #
+  # Then { assert FileUtils.compare_file(file1, file2) }
+  # And  { assert FileUtils.compare_file(file2, file3) }
+  # #
+  describe "" do
+  #
+  #   Given { subject.obfuscate }
+  #   Given { subject.expose }
+  #   Then  { assert true }
+    # Then { assert FileUtils.compare_file(file1, file2) }
+    # And  { assert FileUtils.compare_file(file2, file3) }
 
-  def remove_artifact(file)
-    if File.exist?(file)
-      File.delete file
-    end
   end
+
+  # def backups
+  #   ['.env/backup.env', '.env/development/dbackup.env']
+  #} end
+  #
+  # backups.each do |backup|
+  #   FileUtils.copy('.env/circle.env', backup)
+  # end
+  #
+  # def remove_artifact(file)
+  #   if File.exist?(file)
+  #     File.delete file
+  #   end
+  # end
 
   # Given { ENV["DEPLOY_PASSWORD"] = "deploykeyfromenvironmentvariable" }
   # Given(:deploy_key) { { key: "0"*32} }
@@ -185,20 +208,21 @@ describe Handsomefencer::Environment::Crypto do
 
   describe "#obfuscate()" do
 
-    Given(:subject) { Crypto.new}
+    # Given(:subject) { Crypto.new}
 
-    Given(:file1) { '.env/circle.env.enc' }
-    Given(:file2) { '.env/backup.env.enc' }
-    Given(:file3) { '.env/development/backup.env.enc'}
+    # Given(:file1) { '.env/circle.env.enc' }
+    # Given(:file2) { '.env/backup.env.enc' }
+    # Given(:file3) { '.env/development/backup.env.enc'}
 
-    describe "default" do
+    # describe "default" do
 
-      Given { subject.obfuscate }
-
-      Then { assert File.exist? file1 }
-      And  { assert File.exist? file2 }
-      And  { assert File.exist? file3 }
-    end
+      # Given { subject.obfuscate }
+      # Given { subject.expose }
+      #
+      # Then { assert File.exist? file1 }
+      # And  { assert File.exist? file2 }
+      # And  { assert File.exist? file3 }
+    # end
 
     # describe "directory" do
     #
@@ -210,9 +234,9 @@ describe Handsomefencer::Environment::Crypto do
     #   Then { assert File.exist? file3 }
     #   And  { assert File.exist? file4 }
     # end
-  end
-
-  describe "#expose()" do
+  # end
+  #
+  # describe "#expose()" do
     #
     # Given(:file1) { '.env/backup.env' }
     # Given(:file2) { '.env/development/backup.env'}
@@ -243,13 +267,17 @@ describe Handsomefencer::Environment::Crypto do
     # end
   end
 
-  # Minitest.after_run do
-  #   hash = {
-  #     "test/dummy/local" => "env.enc",
-  #     "test/dummy/server" => "env",
-  #     "." => "env.enc"}
-  #   hash.each do |key, value|
-  #     Dir.glob("#{key}/.env/**/*.#{value}").each { |f| File.delete(f)}
-  #   end
-  # end
+  Minitest.after_run do
+    hash = {
+      "test/dummy/local" => "env.enc",
+      "test/dummy/server" => "env",
+      "." => "env.enc"}
+    hash.each do |key, value|
+      Dir.glob("#{key}/.env/**/*.#{value}").each { |f| File.delete(f)}
+    end
+    # ['.env/backup.env', '.env/development/backup.env'].each do |file|
+    #   FileUtils.copy('.env/circle.env', file)
+    # end
+
+  end
 end
