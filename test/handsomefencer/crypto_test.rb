@@ -6,6 +6,7 @@ describe Handsomefencer::Environment::Crypto do
   subject { Crypto.new }
 
   Given { FileUtils.copy('.env/circle.env', '.env/backup.env') }
+  Given { FileUtils.copy('.env/circle.env', '.env/development/backup.env') }
 
   def remove_artifact(file)
     if File.exist?(file)
@@ -182,50 +183,52 @@ describe Handsomefencer::Environment::Crypto do
   #   end
   # end
 
-  # describe "#obfuscate()" do
-  #
-  #   Given(:subject) { Crypto.new}
-  #
-  #   Given(:file1) { '.env/circle.env.enc' }
-  #   Given(:file2) { '.env/development/web.env.enc'}
-  #
-  #   describe "default" do
-  #
-  #     Given { subject.obfuscate }
-  #
-  #     Then { assert File.exist? file1 }
-  #     And  { assert File.exist? file2 }
-  #   end
-  #
-  #   describe "directory" do
-  #
-  #     Given(:local) { "test/handsomefencer/dummy/local/.env"}
-  #     Given(:file3) { "#{local}/circle.env.enc" }
-  #     Given(:file4) { "#{local}/development/web.env.enc"}
-  #     Given { subject.obfuscate(local) }
-  #
-  #     Then { assert File.exist? file3 }
-  #     And  { assert File.exist? file4 }
-  #   end
-  # end
+  describe "#obfuscate()" do
 
-  describe "#expose()" do
+    Given(:subject) { Crypto.new}
 
-    Given(:file1) { '.env/backup.env' }
-    # Given(:file2) { '.env/development/backup.env'}
-    Given(:subject) { Crypto.new }
-
-    Given { subject.obfuscate }
+    Given(:file1) { '.env/circle.env.enc' }
+    Given(:file2) { '.env/backup.env.enc' }
+    Given(:file3) { '.env/development/backup.env.enc'}
 
     describe "default" do
 
-      # Given { File.delete (file1 ) }
-      # Given { File.delete (file2 ) }
-      Given { subject.expose }
+      Given { subject.obfuscate }
 
       Then { assert File.exist? file1 }
-      # And  { assert File.exist? file2 }
+      And  { assert File.exist? file2 }
+      And  { assert File.exist? file3 }
     end
+
+    # describe "directory" do
+    #
+    #   Given(:local) { "test/handsomefencer/dummy/local/.env"}
+    #   Given(:file3) { "#{local}/circle.env.enc" }
+    #   Given(:file4) { "#{local}/development/web.env.enc"}
+    #   Given { subject.obfuscate(local) }
+    #
+    #   Then { assert File.exist? file3 }
+    #   And  { assert File.exist? file4 }
+    # end
+  end
+
+  describe "#expose()" do
+    #
+    # Given(:file1) { '.env/backup.env' }
+    # Given(:file2) { '.env/development/backup.env'}
+    # Given(:subject) { Crypto.new }
+    #
+    # Given { subject.obfuscate }
+    #
+    # describe "default" do
+    #
+    #   # Given { File.delete (file1 ) }
+    #   # Given { File.delete (file2 ) }
+    #   Given { subject.expose }
+    #
+    #   Then { assert File.exist? file1 }
+      # And  { assert File.exist? file2 }
+    # end
 
     # describe "directory" do
     #
