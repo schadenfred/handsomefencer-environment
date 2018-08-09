@@ -8,3 +8,4 @@
 /tmp/
 .byebug_history
 /.byebug_history
+/config/deploy.key

@@ -13,7 +13,7 @@ describe Handsomefencer::Environment::Crypto do
 
   describe "#generate_key" do
 
-    Given { rmfile('config/deploy.key')}
+    # Given { rmfile('config/deploy.key')}
     Given { rmcode('.gitignore', '/config/deploy.key')}
     Given { subject.generate_deploy_key }
 
@@ -28,22 +28,22 @@ describe Handsomefencer::Environment::Crypto do
     end
   end
 
-  Given { ENV["DEPLOY_KEY"] = "cmFpbHNtYXN0ZXJrZXlmcm9tZW52dmFyaWFibGUxMTE=" }
+  Given { ENV["DEPLOY_KEY"] = "YkvlQHABzmPH+u9BHZgggA==" }
+
   describe "#get_deploy_key" do
 
     describe "when set" do
 
-
-      Then { subject.get_deploy_key.must_match ENV['DEPLOY_KEY'] }
-
+      Then { subject.get_deploy_key.must_match Base64.decode64(ENV['DEPLOY_KEY']) }
     end
 
     describe "when not set" do
 
-      Given(:expected) { "railsmasterkeyfrommasterkeyfile" }
       Given { ENV["DEPLOY_KEY"] = nil }
+      Given(:actual) { Base64.encode64(subject.get_deploy_key) }
+      Given(:expected) { File.read('config/deploy.key') }
 
-      Then { subject.get_deploy_key.length.must_equal 60 }
+      Then { actual.must_equal expected }
     end
   end
 
@@ -54,7 +54,17 @@ describe Handsomefencer::Environment::Crypto do
     Then { assert File.exist?('.env/circle.env.enc')}
 
   end
-#   describe "must encrypt and decrypt a file " do
+
+  describe "#decrypt" do
+
+
+    Given { subject.encrypt '.env/circle.env' }
+    Given { assert File.exist? '.env/circle.env.enc'}
+    Given { File.delete '.env/circle.env' }
+    Given { subject.decrypt '.env/circle.env.enc' }
+    Given { assert File.exist? '.env/circle.env' }
+
+
 #
 #     Given(:plaintext_file) { '.env/circle.env' }
 #     Given(:backed_up_file) { '.env/backup.env' }
@@ -80,7 +90,7 @@ describe Handsomefencer::Environment::Crypto do
 #           And  { assert_equal actual, expected  }
 #         end
 #       end
-#     end
+    end
 #
 #     describe "with password" do
 #

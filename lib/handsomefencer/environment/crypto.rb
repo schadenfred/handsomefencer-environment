@@ -8,11 +8,9 @@ module Handsomefencer
       def initialize
         @cipher = OpenSSL::Cipher::AES.new(128, :CBC)
         @cipher.encrypt
-        @key = get_deploy_key || @cipher.random_key
-        # @a = get_deploy_key
-        @b = @cipher.random_key
-        @c = Base64.decode64(a)
-byebug
+
+        @key = (get_deploy_key ||= @cipher.random_key)
+        # byebug
       end
 
       def encrypt(file)
@@ -46,8 +44,11 @@ byebug
 
 
       def generate_deploy_key
-        key = Base64.encode64(@key)
-        write_to_file(@key, 'config/deploy.key')
+        if File.exist? 'config/deploy.key'
+          File.delete('config/deploy.key')
+        end
+        key = Base64.encode64(@cipher.random_key)
+        write_to_file(key, 'config/deploy.key')
         if File.exist? '.gitignore'
           open('.gitignore', 'a') do |f|
             f << "\/config\/deploy.key"
@@ -62,7 +63,8 @@ byebug
       end
 
       def get_deploy_key
-        ENV['DEPLOY_KEY'] || File.read('config/deploy.key').strip
+        encoded = ENV['DEPLOY_KEY'] || File.read('config/deploy.key')
+        Base64.decode64(encoded)
       end
       #
       # def get_password
