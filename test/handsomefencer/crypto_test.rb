@@ -143,7 +143,7 @@ describe Handsomefencer::Environment::Crypto do
       'test/handsomefencer/dummy/local/.env/development/backup.env'
     ]
     samples.each do |file|
-      FileUtils.copy('tmp/circle.env', file)
+      FileUtils.copy('sourcefiles/circle.env', file)
     end
   end
 end
