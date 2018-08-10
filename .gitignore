@@ -11,8 +11,3 @@
 
 .env/**/*.enc
 /test/handsomefencer/dummy/local/.env/**/*.enc
-
-
-
-
-/config/deploy.key/config/deploy.key

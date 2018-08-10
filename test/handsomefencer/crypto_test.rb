@@ -145,5 +145,8 @@ describe Handsomefencer::Environment::Crypto do
     samples.each do |file|
       FileUtils.copy('sourcefiles/circle.env', file)
     end
+    system 'git checkout .gitignore'
+
+
   end
 end
