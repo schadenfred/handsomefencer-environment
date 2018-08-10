@@ -146,6 +146,7 @@ describe Handsomefencer::Environment::Crypto do
       FileUtils.copy('sourcefiles/circle.env', file)
     end
     system 'git checkout .gitignore'
+    system 'git checkout config/deploy.key'
 
 
   end
