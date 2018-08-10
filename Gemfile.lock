@@ -8,7 +8,6 @@ GEM
   specs:
     byebug (10.0.2)
     coderay (1.1.2)
-    fakefs (0.18.0)
     ffi (1.9.25)
     formatador (0.2.5)
     given_core (3.8.0)
@@ -59,7 +58,6 @@ PLATFORMS
 DEPENDENCIES
   bundler
   byebug
-  fakefs
   guard
   guard-minitest
   handsomefencer-environment!

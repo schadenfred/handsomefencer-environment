@@ -8,4 +8,7 @@
 /tmp/
 .byebug_history
 /.byebug_history
+
+/.env/**/*
+.env/**/*
 /config/deploy.key
