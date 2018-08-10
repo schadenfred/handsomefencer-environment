@@ -13,7 +13,7 @@ describe Handsomefencer::Environment::Crypto do
 
   describe "#generate_key" do
 
-    # Given { rmfile('config/deploy.key')}
+    Given { rmfile('config/deploy.key')}
     Given { rmcode('.gitignore', '/config/deploy.key')}
     Given { subject.generate_deploy_key }
 
@@ -32,13 +32,16 @@ describe Handsomefencer::Environment::Crypto do
 
   describe "#get_deploy_key" do
 
-    describe "when set" do
+    describe "when ENV set" do
 
-      Then { subject.get_deploy_key.must_match Base64.decode64(ENV['DEPLOY_KEY']) }
+      Given(:expected) { Base64.decode64(ENV['DEPLOY_KEY']) }
+
+      Then { subject.get_deploy_key.must_match expected }
     end
 
-    describe "when not set" do
+    describe "when ENV not set" do
 
+      Given { subject.generate_deploy_key }
       Given { ENV["DEPLOY_KEY"] = nil }
       Given(:actual) { Base64.encode64(subject.get_deploy_key) }
       Given(:expected) { File.read('config/deploy.key') }
@@ -53,182 +56,94 @@ describe Handsomefencer::Environment::Crypto do
 
     Then { assert File.exist?('.env/circle.env.enc')}
 
+    describe "#decrypt" do
+
+      Given { FileUtils.copy file1, file2 }
+      Given { assert File.exist? '.env/circle.env.enc'}
+      Given { subject.decrypt '.env/circle.env.enc' }
+      Then { assert File.exist? '.env/circle.env' }
+    end
   end
 
-  describe "#decrypt" do
+  describe "#source_files" do
 
+    describe "default" do
 
-    Given { subject.encrypt '.env/circle.env' }
-    Given { assert File.exist? '.env/circle.env.enc'}
-    Given { File.delete '.env/circle.env' }
-    Given { subject.decrypt '.env/circle.env.enc' }
-    Given { assert File.exist? '.env/circle.env' }
+      Given(:expected_files) { subject.source_files('.env') }
 
-
-#
-#     Given(:plaintext_file) { '.env/circle.env' }
-#     Given(:backed_up_file) { '.env/backup.env' }
-#     Given(:decrypted_file) { '.env/backup.env' }
-#     Given(:encrypted_file) { '.env/backup.env.enc' }
-#     Given(:actual)   { File.read(decrypted_file) }
-#     Given(:expected) { File.read(plaintext_file) }
-#
-#     describe "default" do
-#
-#       describe "#encrypt" do
-#
-#
-#         Then { assert File.exist? encrypted_file }
-#
-#         describe "decrypt" do
-#
-#           Given { File.delete(decrypted_file) }
-#
-#           When { subject.decrypt(encrypted_file) }
-#
-#           Then { assert File.exist? plaintext_file}
-#           And  { assert_equal actual, expected  }
-#         end
-#       end
+      Then { expected_files.must_include file1 }
+      And  { expected_files.must_include file2 }
     end
-#
-#     describe "with password" do
-#
-#       describe "#encrypt" do
-#
-#         Given(:password) { "some-random-password" }
-#         Given(:cipher_with_password) { Crypto.new(password: password) }
-#         Given { cipher_with_password.encrypt(backed_up_file) }
-#
-#         Then { assert File.exist? encrypted_file }
-#
-#         describe "#decrypt" do
-#
-#           describe "with correct password" do
-#
-#             Given { remove_artifact(decrypted_file) }
-#             Given { cipher_with_password.decrypt(encrypted_file) }
-#
-#             Then { assert File.exist? decrypted_file}
-#             And  { assert_equal actual, expected  }
-#           end
-#
-#           describe "without password raises error" do
-#
-#             Given(:expected_error) { OpenSSL::Cipher::CipherError }
-#             Given(:called_with) { subject.decrypt(encrypted_file) }
-#
-#             Then { assert_raises(expected_error) { called_with } }
-#           end
-#
-#           describe "wrong password raises error" do
-#
-#             Given(:wrongpass) { Crypto.new(password: "wrongpass") }
-#             Given(:expected_error) { OpenSSL::Cipher::CipherError }
-#             Given(:called_with) { wrongpass.decrypt(encrypted_file) }
-#
-#             Then { assert_raises(expected_error) { called_with } }
-#           end
-#         end
-#       end
-#     end
-#   end
-#
-#   describe "#source_files" do
-#
-#     Given(:file1) { '.env/circle.env' }
-#     Given(:file2) { '.env/development/web.env' }
-#
-#     describe "default" do
-#
-#       Given(:expected_files) { subject.source_files('.env') }
-#
-#       Then { expected_files.must_include file1 }
-#       And  { expected_files.must_include file2 }
-#     end
-#
-#     describe "with specified directory" do
-#
-#       Given(:expected_files) { subject.source_files('.env', '.env') }
-#
-#       Then { expected_files.must_include file1 }
-#       And  { expected_files.must_include file2 }
-#     end
-#   end
-#
-#   describe "#obfuscate()" do
-#
-#     # Given(:subject) { Crypto.new}
-#
-#     # Given(:file1) { '.env/circle.env.enc' }
-#     # Given(:file2) { '.env/backup.env.enc' }
-#     # Given(:file3) { '.env/development/backup.env.enc'}
-#
-#     # describe "default" do
-#
-#       # Given { subject.obfuscate }
-#       # Given { subject.expose }
-#       #
-#       # Then { assert File.exist? file1 }
-#       # And  { assert File.exist? file2 }
-#       # And  { assert File.exist? file3 }
-#     # end
-#
-#     # describe "directory" do
-#     #
-#     #   Given(:local) { "test/handsomefencer/dummy/local/.env"}
-#     #   Given(:file3) { "#{local}/circle.env.enc" }
-#     #   Given(:file4) { "#{local}/development/web.env.enc"}
-#     #   Given { subject.obfuscate(local) }
-#     #
-#     #   Then { assert File.exist? file3 }
-#     #   And  { assert File.exist? file4 }
-#     # end
-#   # end
-#   #
-#   # describe "#expose()" do
-#     #
-#     # Given(:file1) { '.env/backup.env' }
-#     # Given(:file2) { '.env/development/backup.env'}
-#     # Given(:subject) { Crypto.new }
-#     #
-#     # Given { subject.obfuscate }
-#     #
-#     # describe "default" do
-#     #
-#     #   # Given { File.delete (file1 ) }
-#     #   # Given { File.delete (file2 ) }
-#     #   Given { subject.expose }
-#     #
-#     #   Then { assert File.exist? file1 }
-#       # And  { assert File.exist? file2 }
-#     # end
-#
-#     # describe "directory" do
-#     #
-#     #   Given(:new_cipher) { Crypto.new }
-#     #   Given(:server) { "test/handsomefencer/dummy/server/.env"}
-#     #   Given(:file3) { "#{server}/backup.env" }
-#     #   # Given(:file4) { "#{server}/development/backup.env"}
-#     #   Given { new_cipher.expose(server) }
-#     #
-#     #   # Then { assert File.exist? file3 }
-#     #   # And  { assert File.exist? file4 }
-#     # end
-#   end
-#
-  Minitest.after_run do
-    File.delete
-    # hash = {
-    #   "test/dummy/local" => "env.enc",
-    #   "test/dummy/server" => "env",
-    #   "." => "env.enc"}
-    # hash.each do |key, value|
-    #   Dir.glob("#{key}/.env/**/*.#{value}").each { |f| File.delete(f)}
-    # end
-    # ['.env/backup.env', '.env/development/backup.env'].each do |file|
-    #   FileUtils.copy('.env/circle.env', file)
-    # end
 
+    describe "with specified directory" do
+
+      Given(:expected_files) { subject.source_files('.env', '.env') }
+
+      Then { expected_files.must_include file1 }
+      And  { expected_files.must_include file2 }
+    end
+  end
+
+  describe "default" do
+
+    describe "#obfuscate()" do
+
+      Given { subject.obfuscate }
+
+      Then { assert File.exist? file1 + '.enc' }
+      And  { assert File.exist? file2 + '.enc' }
+      And  { assert File.exist? file3 + '.enc' }
+
+      describe "#expose" do
+
+        Given { subject.expose }
+
+        Then { assert File.exist? file1 }
+        And  { assert File.exist? file2 }
+        And  { assert File.exist? file3 }
+      end
+    end
+  end
+
+  describe "specified directory" do
+
+    describe "#obfuscate()" do
+
+      Given(:dir) { 'test/handsomefencer/dummy/local/'}
+      Given(:file4) { dir + file1 }
+      Given(:file5) { dir + file2 }
+      Given(:file6) { dir + file3 }
+      Given(:file7) { file4 + '.enc' }
+      Given(:file8) { file5 + '.enc' }
+      Given(:file9) { file6 + '.enc' }
+
+      Given { subject.obfuscate(dir + '/.env') }
+
+      Then { assert File.exist? file4 }
+      And  { assert File.exist? file5 }
+      And  { assert File.exist? file6 }
+
+      describe "#expose" do
+
+        Given { subject.obfuscate(dir + '/.env') }
+
+        Then { assert File.exist? file7 }
+      end
+    end
+  end
+
+  Minitest.after_run do
+
+    samples = [
+      '.env/circle.env',
+      '.env/backup.env',
+      '.env/development/backup.env',
+      'test/handsomefencer/dummy/local/.env/circle.env',
+      'test/handsomefencer/dummy/local/.env/backup.env',
+      'test/handsomefencer/dummy/local/.env/development/backup.env'
+    ]
+    samples.each do |file|
+      FileUtils.copy('tmp/circle.env', file)
+    end
   end
 end
