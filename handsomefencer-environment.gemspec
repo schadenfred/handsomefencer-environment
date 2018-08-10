@@ -33,13 +33,10 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler"
-  spec.add_development_dependency "rake"#, "12.3.1"
-  spec.add_development_dependency "minitest" #, "~> 5.0"
-  spec.add_development_dependency "minitest-given" #, "3.8.0"
-  spec.add_development_dependency "guard" #, "2.14.2"
-
-  spec.add_development_dependency "guard-minitest" #, "2.4.6"
-  spec.add_development_dependency "rb-readline" #, "0.5.5"
-  spec.add_development_dependency "fakefs" #, "0.5.5"
-  spec.add_development_dependency "byebug" #, "10.0.2"
+  spec.add_development_dependency "rake"
+  spec.add_development_dependency "minitest"
+  spec.add_development_dependency "minitest-given"
+  spec.add_development_dependency "guard"
+  spec.add_development_dependency "rb-readline"
+  spec.add_development_dependency "byebug"
 end
