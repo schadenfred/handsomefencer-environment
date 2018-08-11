@@ -6,8 +6,8 @@ class Handsomefencer::Environment::Crypto
   def initialize
     @cipher = OpenSSL::Cipher::AES.new(128, :CBC)
     @cipher.encrypt
-
-    @key = (get_deploy_key ||= @cipher.random_key)
+    @nonce = @cipher.random_key
+    @key == get_deploy_key ||= @nonce
   end
 
   def encrypt(file)
@@ -50,6 +50,7 @@ class Handsomefencer::Environment::Crypto
 
   def get_deploy_key
     encoded = ENV['DEPLOY_KEY'] || File.read('config/deploy.key')
+byebug
     Base64.decode64(encoded)
   end
 
