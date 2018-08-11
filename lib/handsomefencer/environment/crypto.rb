@@ -3,43 +3,42 @@ require 'base64'
 
 class Handsomefencer::Environment::Crypto
 
+  def dkfile
+    "config/deploy.key"
+  end
+
   def initialize
     @cipher = OpenSSL::Cipher::AES.new(128, :CBC)
-    @cipher.encrypt
-    @nonce = @cipher.random_key
-    @key == get_deploy_key ||= @nonce
   end
 
   def encrypt(file)
-    data = File.read(file)
-    encrypted = @cipher.update(data) + @cipher.final
-    @cipher.reset
+    @cipher.encrypt
+    @key = @cipher.random_key
+    encrypted = @cipher.update(File.read file) + @cipher.final
+    write_to_file Base64.encode64(@key), dkfile
     write_to_file(Base64.encode64(encrypted), file + '.enc')
   end
 
   def decrypt(file)
-    encrypted = Base64.decode64(File.read(file))
-    @cipher = OpenSSL::Cipher::AES.new(128, :CBC)
-    @cipher.decrypt
-    @cipher.key = @key
+    encoded = File.read file
+    encrypted = Base64.decode64 encoded
+    @decipher = OpenSSL::Cipher::AES.new(128, :CBC)
+    @decipher.decrypt
+    @key = Base64.decode64 File.read(dkfile)
+    @decipher.key = @key
 
-    decrypted = @cipher.update(encrypted) + @cipher.final
+    decrypted = @decipher.update(encrypted) + @decipher.final
     decrypted_file = file.split('.enc').first
-    File.delete decrypted_file if File.exist? decrypted_file
-    write_to_file(decrypted, decrypted_file)
-    @cipher.reset
+    write_to_file decrypted, decrypted_file
   end
 
   def generate_deploy_key
-    file = 'config/deploy.key'
-    File.delete file if File.exist? file
     key = Base64.encode64(@cipher.random_key)
-    write_to_file(key, file)
-    if File.exist? '.gitignore'
-      open('.gitignore', 'a') do |f|
-        f << "\/config\/deploy.key"
-      end
+    write_to_file(key, dkfile)
+    unless File.read('.gitignore').match dkfile
+      open('.gitignore', 'a') { |f| f << "/" + dkfile }
     end
+    get_deploy_key
   end
 
   def write_to_file(data, filename)
@@ -49,9 +48,16 @@ class Handsomefencer::Environment::Crypto
   end
 
   def get_deploy_key
-    encoded = ENV['DEPLOY_KEY'] || File.read('config/deploy.key')
-byebug
-    Base64.decode64(encoded)
+
+    file = 'config/deploy.key'
+    if File.exist?(file)
+      encoded = File.read(file)
+    else
+
+      # ENV['DEPLOY_KEY'].nil?
+      generate_deploy_key
+    end
+    decoded = Base64.decode64(encoded)
   end
 
   def source_files(directory=nil, extension=nil)
