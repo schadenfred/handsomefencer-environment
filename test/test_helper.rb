@@ -34,3 +34,14 @@ module HandsomeHelpers
 end
 
 include HandsomeHelpers
+
+Minitest.after_run do
+  samples = [
+    '.env/circle.env',
+    '.env/backup.env',
+    '.env/development/backup.env'
+  ]
+  samples.each do |file|
+    FileUtils.copy('../../sourcefiles/circle.env', file)
+  end
+end

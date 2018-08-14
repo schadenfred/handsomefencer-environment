@@ -9,5 +9,5 @@
 .byebug_history
 /.byebug_history
 
-/.env/
-/config/
+/config/deploy.key
+/.env/*

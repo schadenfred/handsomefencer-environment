@@ -20,10 +20,16 @@ class Handsomefencer::Environment::Crypto
   def save_deploy_key
     @new_key = @cipher.random_key
     write_to_file Base64.encode64(@new_key), dkfile
-    unless File.read('.gitignore').match dkfile
-      open('.gitignore', 'a') { |f| f << "/" + dkfile }
-    end
+    ignore_sensitive_files
     read_deploy_key
+  end
+
+  def ignore_sensitive_files
+    ["/#{dkfile}", "/.env/*"].each do |pattern|
+      unless File.read('.gitignore').match pattern
+        open('.gitignore', 'a') { |f| f << pattern }
+      end
+    end
   end
 
   def read_deploy_key
@@ -60,7 +66,6 @@ class Handsomefencer::Environment::Crypto
     directory = directory || '.env'
     source_files(directory, extension).each { |file| decrypt(file) }
   end
-
 
   private
 

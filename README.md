@@ -1,7 +1,6 @@
 # Handsomefencer::Environment
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/handsomefencer/environment`. To experiment with that code, run `bin/console` for an interactive prompt.
-
+Obscure your environment files in source control, expose them for deploys.
 
 ## Installation
 
@@ -21,24 +20,60 @@ Or install it yourself as:
 
 ## Usage
 
-I like to keep environment variables out of source control. But I also like deploying from circleci, which means I have to get those variables from my local machine into circleci. That can kind of be a pain. With this gem you can .gitignore all your environment files, push to source control, and then when circleci pulls your code to run it for a deploy, all you need is to set one variable equal to whatever password you used to obfuscate your environment files. In a rails 5.2 app, you can use config/master.key.
+Create a .env directory at the root of your app. In it, place any environment files you'd like to obfuscate in source control:
 
-From the root of your
+.env/development.env
+.env/staging.env
+.env/production.env
+
+Or you can namespace them like so:
+
+.env/production/database.env  
+
+If you aren't using Rails, or don't otherwise already have a config directory, go ahead and create one because we're going to generate a deploy.key to put inside it:
+
+`$ mkdir config`
+
+Then write a ruby script at the root of your project called obfuscate_env.rb and put code like this inside:
+
+```ruby
+require 'handsomefencer/environment'
+cipher = Handsomefencer::Environment::Crypto.new
+cipher.obfuscate
+```
+
+Now you should be able to run the script like so:
+
+`$ ruby obfuscate_env.rb`
+
+You should now have a config/deploy.key file as well as an encoded version of each .env file in your .env directory. For example:
+
+.env/development.env
+.env/development.env.enc
+
+You may wish to confirm that the deploy key and the .env files have been added to your .gitignore, and also that they are not still cached in your repo.
+
+Next, write a ruby script at the root of your project called expose_env.rb and put code like this inside:
+
+```ruby
+require 'handsomefencer/environment'
+cipher = Handsomefencer::Environment::Crypto.new
+cipher.expose
+
+```
+
+Once your code is on the deploy server, you can either create a deploy key with the correct key inside, or set it as a DEPLOY_KEY environment variable. Then you can expose the variables with:
+
+`$ ruby expose_env.rb`
 
 ## Development
 
-After checking out the repo, run `bundle` to install dependencies. Then, run `guard` to run the tests.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+After checking out the repo, run `bundle` to install dependencies. There are some issues with the test_helper loading that I don't understand at the moment, but the tests will run automatically and correctly when saved, after running `bundle exec guard`. 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/schadenfred/handsomefencer-environment. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/schadenfred/handsomefencer-environment.
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
-## Code of Conduct
-
-Everyone interacting in the Handsomefencer::Environment project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/schadenfred/handsomefencer-environment/blob/master/CODE_OF_CONDUCT.md).
