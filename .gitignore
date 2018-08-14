@@ -9,6 +9,5 @@
 .byebug_history
 /.byebug_history
 
-.env/**/*.enc
-/test/handsomefencer/dummy/local/.env/**/*.enc
+.env/**/*.env
 /config/deploy.key
