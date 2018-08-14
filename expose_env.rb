@@ -1,3 +1,3 @@
-require 'handsomefencer/environment'
+require './lib/handsomefencer/environment'
 cipher = Handsomefencer::Environment::Crypto.new
 cipher.expose
