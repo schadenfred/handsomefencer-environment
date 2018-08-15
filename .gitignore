@@ -11,3 +11,4 @@
 
 /.env/
 /config/
+/test/handsomefencer/dummy/.env/*
