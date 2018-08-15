@@ -12,4 +12,4 @@
 /.env/
 /config/
 /test/handsomefencer/dummy/.env/*
-/test/handsomefencer/dummy/config/deploy.key
+/test/handsomefencer/dummy/config/*
