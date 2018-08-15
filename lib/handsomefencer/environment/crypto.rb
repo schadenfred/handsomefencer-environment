@@ -13,7 +13,7 @@ class Handsomefencer::Environment::Crypto
     if ENV['DEPLOY_KEY'].nil?
       @pass_phrase = read_deploy_key.nil? ? save_deploy_key : read_deploy_key
     else
-      @pass_phrase = ENV['DEPLOY_KEY']
+      @pass_phrase = Base64.decode64(ENV['DEPLOY_KEY'])
     end
   end
 
