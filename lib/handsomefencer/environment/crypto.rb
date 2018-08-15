@@ -6,7 +6,7 @@ class Handsomefencer::Environment::Crypto
   def initialize
     @cipher = OpenSSL::Cipher.new 'AES-128-CBC'
     @salt = '8 octets'
-    @pass_phrase = get_deploy_key
+    @pass_phrase = Base64.decode64(get_deploy_key)
   end
 
   def get_deploy_key

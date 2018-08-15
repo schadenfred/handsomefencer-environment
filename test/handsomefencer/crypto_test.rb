@@ -51,7 +51,7 @@ describe Handsomefencer::Environment::Crypto do
         Given { subject.get_deploy_key }
         Given(:pass_phrase) { subject.instance_variable_get("@pass_phrase") }
 
-        Then { assert_equal pass_phrase, ENV['DEPLOY_KEY'] }
+        Then { assert_equal pass_phrase, Base64.decode64(ENV['DEPLOY_KEY']) }
       end
     end
   end
