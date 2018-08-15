@@ -6,15 +6,15 @@ class Handsomefencer::Environment::Crypto
   def initialize
     @cipher = OpenSSL::Cipher.new 'AES-128-CBC'
     @salt = '8 octets'
-    get_deploy_key
+    @pass_phrase = get_deploy_key
   end
 
   def get_deploy_key
-    if ENV['DEPLOY_KEY'].nil?
-      @pass_phrase = read_deploy_key.nil? ? save_deploy_key : read_deploy_key
-    else
-      @pass_phrase = Base64.decode64(ENV['DEPLOY_KEY'])
-    end
+    ENV['DEPLOY_KEY'].nil? ? read_deploy_key : ENV['DEPLOY_KEY']
+  end
+
+  def read_deploy_key
+    File.exist?(dkfile) ? File.read(dkfile) : save_deploy_key
   end
 
   def save_deploy_key
@@ -30,10 +30,6 @@ class Handsomefencer::Environment::Crypto
         open('.gitignore', 'a') { |f| f << pattern }
       end
     end
-  end
-
-  def read_deploy_key
-    File.exist?(dkfile) ? Base64.decode64(File.read dkfile) : nil
   end
 
   def encrypt(file)
