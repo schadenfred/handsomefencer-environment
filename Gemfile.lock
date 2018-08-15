@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    handsomefencer-environment (0.2.8)
+    handsomefencer-environment (0.2.9)
 
 GEM
   remote: https://rubygems.org/
