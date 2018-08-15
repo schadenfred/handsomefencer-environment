@@ -123,4 +123,14 @@ describe Handsomefencer::Environment::Crypto do
     Then { assert File.exist? env_file }
     And  { assert File.exist? nested_env_file }
   end
+Minitest.after_run do
+  samples = [
+    '.env/circle.env',
+    '.env/backup.env',
+    '.env/development/backup.env'
+  ]
+  samples.each do |file|
+    FileUtils.copy('../../sourcefiles/circle.env', file)
+  end
+end
 end
