@@ -25,9 +25,11 @@ class Handsomefencer::Environment::Crypto
   end
 
   def ignore_sensitive_files
-    ["/#{dkfile}", "/.env/*"].each do |pattern|
-      unless File.read('.gitignore').match pattern
-        open('.gitignore', 'a') { |f| f << pattern }
+    if File.exist? '.gitignore'
+      ["/#{dkfile}", "/.env/*"].each do |pattern|
+        unless File.read('.gitignore').match pattern
+          open('.gitignore', 'a') { |f| f << pattern }
+        end
       end
     end
   end
